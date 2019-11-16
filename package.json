@@ -9,6 +9,7 @@
     "@fortawesome/free-brands-svg-icons": "^5.11.2",
     "@fortawesome/pro-solid-svg-icons": "^5.11.2",
     "@fortawesome/react-fontawesome": "^0.1.7",
+    "@turf/distance": "^6.0.1",
     "date-fns": "^2.7.0",
     "gatsby": "^2.17.11",
     "gatsby-background-image": "^0.8.19",
@@ -30,7 +31,8 @@
     "react-hook-konami-code-listener": "^1.1.1",
     "react-use-konami": "^1.0.13",
     "semantic-ui-css": "^2.4.1",
-    "semantic-ui-react": "^0.88.1"
+    "semantic-ui-react": "^0.88.1",
+    "turf-point": "^2.0.1"
   },
   "devDependencies": {
     "dotenv": "^8.2.0",

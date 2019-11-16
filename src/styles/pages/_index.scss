@@ -125,3 +125,23 @@
         }
     }
 }
+
+.results-container {
+    max-width: 1280px;
+    margin: 0 auto;
+    margin-top: -25px;
+    background: white;
+    border-radius: 15px;
+    width: 100%;
+    height: 60px;
+    padding: 25px;
+    z-index: 100;
+    position: relative;
+}
+
+.search-result {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 16px;
+    justify-content: space-between;
+}

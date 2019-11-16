@@ -1,20 +1,18 @@
 import React, { useState } from "react";
 import { Link, StaticQuery } from "gatsby";
-import { addDays } from "date-fns";
-
+import { addDays, format } from "date-fns";
 import BackgroundImage from "gatsby-background-image";
-
 import Layout from "../components/layout";
-import Image from "../components/image";
 import SEO from "../components/seo";
+import DatePicker from "react-datepicker";
+import useKonami from "react-use-konami";
 
 // Style Import
 import "../styles/_index.scss";
 import "../styles/pages/_index.scss";
-
 import { Search, Button } from "semantic-ui-react";
-import DatePicker from "react-datepicker";
-import useKonami from "react-use-konami";
+import distance from "@turf/distance";
+import point from "turf-point";
 
 import * as _airports from "../static/airports.json";
 const airports = _airports.map(item => ({ ...item, key: item.code }));
@@ -26,6 +24,7 @@ const IndexPage = () => {
     const [locations, setLocations] = useState(["", ""]);
     const [results, setResults] = useState([]);
     const [isButtonLoading, setButtonLoading] = useState(false);
+    const [searchResults, setSearchResults] = useState([]);
 
     useKonami(() => {
         setFalloutMode(true);
@@ -59,17 +58,33 @@ const IndexPage = () => {
             _locations[1] = result.code;
             setLocations(_locations);
         }
+
+        setResults([]);
     }
 
     function onDateSelect(date, leg) {
         let _dates = dates;
         if (leg === "inbound") {
             _dates[1] = date;
-            return setDates(_dates);
+            return setDates([..._dates]);
         } else {
             _dates[0] = date;
-            return setDates(_dates);
+            return setDates([..._dates]);
         }
+    }
+
+    function retrieveResults() {
+        setButtonLoading(true);
+        const URL = `https://api.skypicker.com/flights?flyFrom=${locations[0]}&to=${
+            locations[1]
+        }&date_from=${format(dates[0], "dd/MM/yyyy")}&date_to=${format(
+            dates[1],
+            "dd/MM/yyyy",
+        )}&max_stopovers=2&limit=25&curr=GBP&partner=picky`;
+        fetch(URL)
+            .then(response => response.json())
+            .then(({ data }) => setSearchResults(data))
+            .finally(() => setButtonLoading(false));
     }
 
     const outboundStr = new Intl.DateTimeFormat("en-GB").format(dates[0]);
@@ -124,22 +139,89 @@ const IndexPage = () => {
                                 />
                             </div>
                             <div className="splash-button-container">
-                                <Button loading={isButtonLoading} className="jeff-green">
+                                <Button
+                                    onClick={retrieveResults}
+                                    loading={isButtonLoading}
+                                    className="jeff-green"
+                                >
                                     Search
                                 </Button>
                             </div>
                         </div>
                     </section>
                 </BackgroundSection>
-                <h1>Hi people</h1>
-                <p>Welcome to your new Gatsby site.</p>
-                <p>Now go build something great.</p>
-                <div className="test-div">
-                    <Image />
-                </div>
-                <Link to="/page-2/">Go to page 2</Link>
+                {searchResults.length > 0 && (
+                    <SearchResults locations={locations} results={searchResults} />
+                )}
             </Layout>
         </React.Fragment>
+    );
+};
+
+const SearchResults = ({ results = [], locations = [] }) => {
+    return (
+        <section className="results-container">
+            <h2>
+                Search Results ({locations[0]} - {locations[1]})
+            </h2>
+            {results.map((result, index) => (
+                <SingleSearchResult result={result} index={index} />
+            ))}
+        </section>
+    );
+};
+
+const SingleSearchResult = ({ result, index }) => {
+    let totalDistance = 0;
+    if (Array.isArray(result.route)) {
+        totalDistance = result.route
+            .map(({ lngFrom, latFrom, lngTo, latTo }) => {
+                let from = point([lngFrom, lngTo]);
+                let to = point([lngFrom, latTo]);
+                return distance(from, to, { units: "miles" });
+            })
+            .reduce((acc, curr) => acc + curr)
+            .toFixed(2);
+    }
+
+    return (
+        <article key={result.id} className="search-result">
+            <div>
+                <h5 style={{ marginBottom: 0 }}>Departure</h5>
+                <p>
+                    {result.cityFrom} ({result.flyFrom})
+                </p>
+            </div>
+            <div>
+                <h5 style={{ marginBottom: 0 }}>Stops</h5>
+                <p>{result.route.length - 1}</p>
+            </div>
+            <div>
+                <h5 style={{ marginBottom: 0 }}>Arrival</h5>
+                <p>
+                    {result.cityTo} ({result.flyTo})
+                </p>
+            </div>
+            <div>
+                <h5 style={{ marginBottom: 0 }}>Total Distance</h5>
+                <p>
+                    {totalDistance}
+                    <sup>km</sup>
+                </p>
+            </div>
+            <div>
+                <h5 style={{ marginBottom: 0, fontWeight: "bolder" }}>
+                    CO<sup>2</sup> Per Passenger
+                </h5>
+                <p>
+                    <i>{(totalDistance * 0.1753).toFixed(2)}kg</i>
+                </p>
+            </div>
+            <div>
+                <h5 style={{ marginBottom: 0 }}>Price</h5>
+                <p>£{result.price}</p>
+            </div>
+        </article>
     );
 };
 
