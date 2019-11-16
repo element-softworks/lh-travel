@@ -10,5 +10,11 @@
     padding: 10px;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
+
+    .splash-title {
+        color: white;
+        font-family: "Raleway", sans-serif;
+        font-size: 3em;
+    }
 }

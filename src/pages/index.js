@@ -31,10 +31,10 @@ const BackgroundSection = ({ className }) => (
     <StaticQuery
         query={graphql`
             query {
-                desktop: file(relativePath: { eq: "green_splash.jpg" }) {
+                desktop: file(relativePath: { eq: "green_splash_2.jpg" }) {
                     childImageSharp {
-                        fluid(quality: 90, maxWidth: 1920) {
-                            ...GatsbyImageSharpFluid_withWebp
+                        fluid(quality: 100, maxWidth: 1920) {
+                            ...GatsbyImageSharpFluid
                         }
                     }
                 }
@@ -51,7 +51,7 @@ const BackgroundSection = ({ className }) => (
                     backgroundColor={`#040e18`}
                 >
                     <section className="splash-container">
-                        <h1>Hello gatsby-background-image</h1>
+                        <h1 className="splash-title">Hello gatsby-background-image</h1>
                     </section>
                 </BackgroundImage>
             );
