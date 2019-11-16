@@ -14,8 +14,47 @@ import { Search, Button } from "semantic-ui-react";
 import distance from "@turf/distance";
 import point from "turf-point";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+    faPlaneDeparture,
+    faCar,
+    faTruck,
+    faTrain,
+    faBus,
+} from "@fortawesome/pro-regular-svg-icons";
+
 import * as _airports from "../static/airports.json";
 const airports = _airports.map(item => ({ ...item, key: item.code }));
+const jeff_green = "#b7e778";
+const EU_COUNTRIES = [
+    "AT",
+    "BE",
+    "BG",
+    "HR",
+    "CY",
+    "CZ",
+    "DK",
+    "EE",
+    "FI",
+    "FR",
+    "DE",
+    "EL",
+    "HU",
+    "IE",
+    "LV",
+    "LU",
+    "MT",
+    "NL",
+    "PL",
+    "PT",
+    "RO",
+    "SK",
+    "SI",
+    "ES",
+    "SE",
+    "UK",
+    "GB",
+];
 
 const IndexPage = () => {
     const [isFalloutMode, setFalloutMode] = useState(false);
@@ -80,7 +119,7 @@ const IndexPage = () => {
         }&date_from=${format(dates[0], "dd/MM/yyyy")}&date_to=${format(
             dates[1],
             "dd/MM/yyyy",
-        )}&max_stopovers=2&limit=25&curr=GBP&partner=picky`;
+        )}&max_stopovers=0&limit=5&curr=GBP&partner=picky`;
         fetch(URL)
             .then(response => response.json())
             .then(({ data }) => setSearchResults(data))
@@ -164,7 +203,12 @@ const SearchResults = ({ results = [], locations = [] }) => {
             <h2>
                 Search Results ({locations[0]} - {locations[1]})
             </h2>
-            <AngryCO2Warning from={results[0].countryFrom} to={results[0].countryTo} />
+            <AngryCO2Warning
+                locations={locations}
+                route={results[0].route}
+                from={results[0].countryFrom}
+                to={results[0].countryTo}
+            />
             {results.map((result, index) => (
                 <SingleSearchResult result={result} index={index} />
             ))}
@@ -172,16 +216,95 @@ const SearchResults = ({ results = [], locations = [] }) => {
     );
 };
 
-const AngryCO2Warning = ({ from, to }) => {
-    if (from.code === to.code) {
+const AngryCO2Warning = ({ from, to, route, locations }) => {
+    let startLocation = airports.find(({ code }) => code === locations[0]);
+    let endLocation = airports.find(({ code }) => code === locations[1]);
+
+    console.log(startLocation, endLocation);
+    const airDistance = route
+        .map(({ lngFrom, latFrom, lngTo, latTo }) => {
+            let from = point([lngFrom, latFrom]);
+            let to = point([lngFrom, latTo]);
+            return distance(from, to, { units: "kilometers" });
+        })
+        .reduce((acc, curr) => acc + curr)
+        .toFixed(2);
+    const groundDistance = distance(
+        point([startLocation.lon, startLocation.lat]),
+        point([endLocation.lon, endLocation.lat]),
+        { units: "kilometers" },
+    );
+
+    let isJourneyInEU = EU_COUNTRIES.includes(from.code) && EU_COUNTRIES.includes(to.code);
+
+    if (isJourneyInEU) {
         return (
             <section className="jeff-informs-you">
-                <b>
-                    <i>
-                        This flight is domestic! You could've saved £56 on your car insurance with
-                        go compare!
-                    </i>
-                </b>
+                <h3 className="text-center">
+                    {from.code === to.code ? (
+                        <i>
+                            This flight is domestic! Here's how much CO<sub>2</sub> you could've
+                            produced.
+                        </i>
+                    ) : (
+                        <i>
+                            This flight is in the EU! Here's how much CO<sub>2</sub> you could've
+                            produced.
+                        </i>
+                    )}
+                </h3>
+                <div className="jeff-informs-data">
+                    <div>
+                        <FontAwesomeIcon icon={faPlaneDeparture} color={jeff_green} size="2x" />
+                        <p>
+                            <b>Plane</b>
+                            <br />
+                            <b>
+                                <i>{(airDistance * 0.1753).toFixed(2)}kg</i>
+                            </b>
+                        </p>
+                    </div>
+                    <div>
+                        <FontAwesomeIcon icon={faCar} color={jeff_green} size="2x" />
+                        <p>
+                            <b>Small Car</b>
+                            <br />
+                            <b>
+                                <i>{(groundDistance * 0.1276).toFixed(2)}kg</i>
+                            </b>
+                        </p>
+                    </div>
+                    <div>
+                        <FontAwesomeIcon icon={faTruck} color={jeff_green} size="2x" />
+                        <p>
+                            <b>Large Car</b>
+                            <br />
+                            <b>
+                                <i>{(groundDistance * 0.257).toFixed(2)}kg</i>
+                            </b>
+                        </p>
+                    </div>
+                    <div>
+                        <FontAwesomeIcon icon={faTrain} color={jeff_green} size="2x" />
+                        <p>
+                            <b>Train</b>
+                            <br />
+                            <b>
+                                <i>{(groundDistance * 0.06).toFixed(2)}kg</i>
+                            </b>
+                        </p>
+                    </div>
+                    <div>
+                        <FontAwesomeIcon icon={faBus} color={jeff_green} size="2x" />
+                        <p>
+                            <b>Bus</b>
+                            <br />
+                            <b>
+                                <i>{(groundDistance * 0.089).toFixed(2)}kg</i>
+                            </b>
+                        </p>
+                    </div>
+                </div>
             </section>
         );
     }
@@ -194,7 +317,7 @@ const SingleSearchResult = ({ result, index }) => {
     if (Array.isArray(result.route)) {
         totalDistance = result.route
             .map(({ lngFrom, latFrom, lngTo, latTo }) => {
-                let from = point([lngFrom, lngTo]);
+                let from = point([lngFrom, latFrom]);
                 let to = point([lngFrom, latTo]);
                 return distance(from, to, { units: "kilometers" });
             })
@@ -229,7 +352,7 @@ const SingleSearchResult = ({ result, index }) => {
             </div>
             <div>
                 <h5 style={{ marginBottom: 0, fontWeight: "bolder" }}>
-                    CO<sup>2</sup> Per Passenger
+                    CO<sub>2</sub> Per Passenger
                 </h5>
                 <p>
                     <i>{(totalDistance * 0.1753).toFixed(2)}kg</i>
