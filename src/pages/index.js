@@ -164,11 +164,29 @@ const SearchResults = ({ results = [], locations = [] }) => {
             <h2>
                 Search Results ({locations[0]} - {locations[1]})
             </h2>
+            <AngryCO2Warning from={results[0].countryFrom} to={results[0].countryTo} />
             {results.map((result, index) => (
                 <SingleSearchResult result={result} index={index} />
             ))}
         </section>
     );
+};
+
+const AngryCO2Warning = ({ from, to }) => {
+    if (from.code === to.code) {
+        return (
+            <section className="jeff-informs-you">
+                <b>
+                    <i>
+                        This flight is domestic! You could've saved £56 on your car insurance with
+                        go compare!
+                    </i>
+                </b>
+            </section>
+        );
+    }
+
+    return null;
 };
 
 const SingleSearchResult = ({ result, index }) => {
@@ -178,7 +196,7 @@ const SingleSearchResult = ({ result, index }) => {
             .map(({ lngFrom, latFrom, lngTo, latTo }) => {
                 let from = point([lngFrom, lngTo]);
                 let to = point([lngFrom, latTo]);
-                return distance(from, to, { units: "miles" });
+                return distance(from, to, { units: "kilometers" });
             })
             .reduce((acc, curr) => acc + curr)
             .toFixed(2);

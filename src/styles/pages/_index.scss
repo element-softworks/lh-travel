@@ -144,4 +144,14 @@
     flex-direction: row;
     margin-bottom: 16px;
     justify-content: space-between;
+
+    div {
+        padding: 5px;
+    }
+}
+
+.jeff-informs-you {
+    border: 2px solid #b7e778;
+    padding: 10px;
+    margin-bottom: 10px;
 }
