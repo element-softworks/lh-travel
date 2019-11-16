@@ -15,14 +15,41 @@ import { Search, Button } from "semantic-ui-react";
 import DatePicker from "react-datepicker";
 import useKonami from "react-use-konami";
 
+import * as _airports from "../static/airports.json";
+const airports = _airports.map(item => ({ ...item, key: item.code }));
+
 const IndexPage = () => {
     const [isFalloutMode, setFalloutMode] = useState(false);
+    const [isSearching, setSearching] = useState(false);
     const [dates, setDates] = useState([]);
+    const [locations, setLocations] = useState(["", ""]);
+    const [results, setResults] = useState([]);
 
     useKonami(() => {
         setFalloutMode(true);
-        console.log("oof");
     });
+
+    function onSearchChange(e, { value }) {
+        let results = airports.filter(
+            ({ title, key }) => title.includes(value) || key.includes(value),
+        );
+
+        return setResults(results);
+    }
+
+    function onResultSelect(result, place) {
+        if (place === "depart") {
+            let _locations = locations;
+            _locations[0] = result.code;
+            setLocations(_locations);
+        } else {
+            let _locations = locations;
+            _locations[1] = result.code;
+            setLocations(_locations);
+        }
+    }
+
+    function onDateSelect(date, leg) {}
 
     return (
         <React.Fragment>
@@ -37,11 +64,25 @@ const IndexPage = () => {
                         <div className="splash-search">
                             <div className="splash-place-container">
                                 <Search
+                                    resultRenderer={ResultComponent}
+                                    onResultSelect={(_, { result }) =>
+                                        onResultSelect(result, "depart")
+                                    }
+                                    results={results}
+                                    loading={isSearching}
+                                    onSearchChange={onSearchChange}
                                     placeholder="Departure"
                                     className="splash-placepicker"
                                 />
                                 <Search
-                                    placeholder="Arrival"
+                                    resultRenderer={ResultComponent}
+                                    onResultSelect={(_, { result }) =>
+                                        onResultSelect(result, "arrive")
+                                    }
+                                    results={results}
+                                    loading={isSearching}
+                                    onSearchChange={onSearchChange}
+                                    placeholder="Departure"
                                     className="splash-placepicker"
                                 />
                             </div>
@@ -54,7 +95,7 @@ const IndexPage = () => {
                                 <DatePicker
                                     placeholderText="Return Date"
                                     className="splash-datepicker splash-date-arrival"
-                                    onChange={(...all) => console.log(all)}
+                                    onChange={date => console.log(date)}
                                 />
                             </div>
                             <div className="splash-button-container">
@@ -72,6 +113,14 @@ const IndexPage = () => {
                 <Link to="/page-2/">Go to page 2</Link>
             </Layout>
         </React.Fragment>
+    );
+};
+
+const ResultComponent = ({ ...rest }) => {
+    return (
+        <span key={rest.code}>
+            {rest.title} - {rest.code}
+        </span>
     );
 };
 
