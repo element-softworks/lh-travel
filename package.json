@@ -23,12 +23,16 @@
     "node-sass": "^4.13.0",
     "prop-types": "^15.7.2",
     "react": "^16.11.0",
+    "react-datepicker": "^2.10.0",
     "react-dom": "^16.11.0",
     "react-helmet": "^5.2.1",
+    "react-hook-konami-code-listener": "^1.1.1",
+    "react-use-konami": "^1.0.13",
     "semantic-ui-css": "^2.4.1",
     "semantic-ui-react": "^0.88.1"
   },
   "devDependencies": {
+    "dotenv": "^8.2.0",
     "prettier": "^1.19.1"
   },
   "keywords": [
