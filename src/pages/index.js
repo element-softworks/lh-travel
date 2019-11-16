@@ -397,7 +397,7 @@ const BackgroundSection = ({ className, children, fallout = false, ...props }) =
                         className={className}
                         fluid={imageData}
                         backgroundColor={`#040e18`}
-                        style={{ backgroundPosition: "bottom center" }}
+                        style={{ backgroundPosition: "bottom center", opacity: 1 }}
                     >
                         {children}
                     </BackgroundImage>

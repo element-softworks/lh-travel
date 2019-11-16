@@ -4,6 +4,17 @@ import Img from "gatsby-image";
 import { Link, useStaticQuery } from "gatsby";
 
 import "../styles/components/_header.scss";
+import Typed from "react-typed";
+
+const typed_strings = [
+    "remove your orangutan guilt.",
+    "think the world is doomed.",
+    "choke on smog.",
+    "melt ice more efficiently.",
+    "raise the sea levels.",
+    "say goodbye to Tuvalu.",
+    "make more billionaires.",
+];
 
 const Header = ({ siteTitle }) => (
     <header className="header">
@@ -12,7 +23,10 @@ const Header = ({ siteTitle }) => (
                 <Logo className="header-logo" />
             </Link>
             <span style={{ color: "#b7e778" }}>
-                <i>Helping to remove your orangutan guilt.</i>
+                <i>
+                    Helping you&nbsp;
+                    <Typed loop strings={typed_strings} typeSpeed={60} />
+                </i>
             </span>
         </div>
     </header>
