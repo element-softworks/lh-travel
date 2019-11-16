@@ -2,3 +2,13 @@
     max-width: 300px;
     margin-bottom: 1.45rem;
 }
+
+.splash-container {
+    min-height: 600px;
+    margin: 0 auto;
+    max-width: 960px;
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
