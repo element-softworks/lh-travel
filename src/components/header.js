@@ -8,9 +8,12 @@ import "../styles/components/_header.scss";
 const Header = ({ siteTitle }) => (
     <header className="header">
         <div className="header-container">
-            <Link to="/">
+            <Link style={{ minWidth: 150 }} to="/">
                 <Logo className="header-logo" />
             </Link>
+            <span style={{ color: "#b7e778" }}>
+                <i>Helping to remove your orangutan guilt.</i>
+            </span>
         </div>
     </header>
 );
@@ -36,9 +39,7 @@ const Logo = ({ ...props }) => {
         }
     `);
 
-    return (
-        <Img {...props} fluid={data.placeholderImage.childImageSharp.fluid} />
-    );
+    return <Img {...props} fluid={data.placeholderImage.childImageSharp.fluid} />;
 };
 
 export default Header;
