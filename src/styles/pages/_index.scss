@@ -97,6 +97,19 @@
     }
 
     @media screen and (max-width: 960px) {
+        .splash-place-container {
+            display: flex;
+            flex-direction: column;
+
+            .splash-placepicker {
+                div {
+                    input {
+                        border-radius: 25px !important;
+                    }
+                }
+            }
+        }
+
         .splash-title {
             text-align: center;
         }

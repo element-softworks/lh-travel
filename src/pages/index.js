@@ -21,17 +21,28 @@ const airports = _airports.map(item => ({ ...item, key: item.code }));
 const IndexPage = () => {
     const [isFalloutMode, setFalloutMode] = useState(false);
     const [isSearching, setSearching] = useState(false);
-    const [dates, setDates] = useState([]);
+    const [dates, setDates] = useState([new Date(), new Date()]);
     const [locations, setLocations] = useState(["", ""]);
     const [results, setResults] = useState([]);
+    const [isButtonLoading, setButtonLoading] = useState(false);
 
     useKonami(() => {
         setFalloutMode(true);
     });
 
     function onSearchChange(e, { value }) {
+        if (String(value).length < 2) {
+            return;
+        }
+
         let results = airports.filter(
-            ({ title, key }) => title.includes(value) || key.includes(value),
+            ({ title, key }) =>
+                String(title)
+                    .toLowerCase()
+                    .includes(String(value).toLowerCase()) ||
+                String(key)
+                    .toLowerCase()
+                    .includes(String(value).toLowerCase()),
         );
 
         return setResults(results);
@@ -49,7 +60,19 @@ const IndexPage = () => {
         }
     }
 
-    function onDateSelect(date, leg) {}
+    function onDateSelect(date, leg) {
+        let _dates = dates;
+        if (leg === "inbound") {
+            _dates[1] = date;
+            return setDates(_dates);
+        } else {
+            _dates[0] = date;
+            return setDates(_dates);
+        }
+    }
+
+    const outboundStr = new Intl.DateTimeFormat("en-GB").format(dates[0]);
+    const inboundStr = new Intl.DateTimeFormat("en-GB").format(dates[1]);
 
     return (
         <React.Fragment>
@@ -58,8 +81,7 @@ const IndexPage = () => {
                 <BackgroundSection fallout={isFalloutMode}>
                     <section className="splash-container">
                         <h1 className="splash-title">
-                            Jeff's big green{" "}
-                            {isFalloutMode ? "fallout" : "flight"} machine
+                            Jeff's big green {isFalloutMode ? "fallout" : "flight"} machine
                         </h1>
                         <div className="splash-search">
                             <div className="splash-place-container">
@@ -88,18 +110,21 @@ const IndexPage = () => {
                             </div>
                             <div className="splash-date-container">
                                 <DatePicker
+
+                                    value={outboundStr}
                                     placeholderText="Departure Date"
                                     className="splash-datepicker splash-date-deperature"
-                                    onChange={(...all) => console.log(all)}
+                                    onChange={date => onDateSelect(date, "outbound")}
                                 />
                                 <DatePicker
+                                    value={inboundStr}
                                     placeholderText="Return Date"
                                     className="splash-datepicker splash-date-arrival"
-                                    onChange={date => console.log(date)}
+                                    onChange={date => onDateSelect(date, "inbound")}
                                 />
                             </div>
                             <div className="splash-button-container">
-                                <Button className="jeff-green">Search</Button>
+                                <Button loading={isButtonLoading} className="jeff-green">Search</Button>
                             </div>
                         </div>
                     </section>
@@ -124,12 +149,7 @@ const ResultComponent = ({ ...rest }) => {
     );
 };
 
-const BackgroundSection = ({
-    className,
-    children,
-    fallout = false,
-    ...props
-}) => {
+const BackgroundSection = ({ className, children, fallout = false, ...props }) => {
     return (
         <StaticQuery
             query={graphql`
