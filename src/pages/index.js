@@ -7,6 +7,7 @@ import SEO from "../components/seo"
 
 // Style Import
 import "../styles/pages/_index.scss"
+import "semantic-ui-css/semantic.min.css"
 
 const IndexPage = () => (
   <Layout>
