@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link, StaticQuery } from "gatsby";
+import { addDays } from "date-fns";
 
 import BackgroundImage from "gatsby-background-image";
 
@@ -21,7 +22,7 @@ const airports = _airports.map(item => ({ ...item, key: item.code }));
 const IndexPage = () => {
     const [isFalloutMode, setFalloutMode] = useState(false);
     const [isSearching, setSearching] = useState(false);
-    const [dates, setDates] = useState([new Date(), new Date()]);
+    const [dates, setDates] = useState([new Date(), addDays(new Date(), 1)]);
     const [locations, setLocations] = useState(["", ""]);
     const [results, setResults] = useState([]);
     const [isButtonLoading, setButtonLoading] = useState(false);
@@ -104,13 +105,12 @@ const IndexPage = () => {
                                     results={results}
                                     loading={isSearching}
                                     onSearchChange={onSearchChange}
-                                    placeholder="Departure"
+                                    placeholder="Arrival"
                                     className="splash-placepicker"
                                 />
                             </div>
                             <div className="splash-date-container">
                                 <DatePicker
-
                                     value={outboundStr}
                                     placeholderText="Departure Date"
                                     className="splash-datepicker splash-date-deperature"
@@ -124,7 +124,9 @@ const IndexPage = () => {
                                 />
                             </div>
                             <div className="splash-button-container">
-                                <Button loading={isButtonLoading} className="jeff-green">Search</Button>
+                                <Button loading={isButtonLoading} className="jeff-green">
+                                    Search
+                                </Button>
                             </div>
                         </div>
                     </section>
