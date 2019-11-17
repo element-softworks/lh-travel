@@ -119,7 +119,7 @@ const IndexPage = () => {
         }&date_from=${format(dates[0], "dd/MM/yyyy")}&date_to=${format(
             dates[1],
             "dd/MM/yyyy",
-        )}&max_stopovers=0&limit=5&curr=GBP&partner=picky`;
+        )}&max_stopovers=1&limit=5&curr=GBP&partner=picky`;
         fetch(URL)
             .then(response => response.json())
             .then(({ data }) => setSearchResults(data))
@@ -332,10 +332,6 @@ const SingleSearchResult = ({ result, index }) => {
                 <p>
                     {result.cityFrom} ({result.flyFrom})
                 </p>
-            </div>
-            <div>
-                <h5 style={{ marginBottom: 0 }}>Stops</h5>
-                <p>{result.route.length - 1}</p>
             </div>
             <div>
                 <h5 style={{ marginBottom: 0 }}>Arrival</h5>

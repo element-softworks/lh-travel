@@ -8,7 +8,7 @@ import Typed from "react-typed";
 
 const typed_strings = [
     "remove your orangutan guilt.",
-    "think the world is doomed.",
+    "realise the world is doomed.",
     "choke on smog.",
     "melt ice more efficiently.",
     "raise the sea levels.",
