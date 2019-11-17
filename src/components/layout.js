@@ -11,6 +11,8 @@ import { useStaticQuery, graphql } from "gatsby";
 
 import Header from "./header";
 import "./layout.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faGithub } from "@fortawesome/free-brands-svg-icons";
 
 const Layout = ({ children }) => {
     const data = useStaticQuery(graphql`
@@ -28,11 +30,14 @@ const Layout = ({ children }) => {
             <Header siteTitle={data.site.siteMetadata.title} />
             <div>
                 <main>{children}</main>
-                {/* <footer>
-                    © {new Date().getFullYear()}, Built with
-                    {` `}
-                    <a href="https://www.gatsbyjs.org">Gatsby</a>
-                </footer> */}
+                <footer className="footer">
+                    <div>
+                        <a href="https://github.com/LukeXF/emissions-calculator">
+                            <FontAwesomeIcon icon={faGithub} size="2x" color="white" />
+                        </a>
+                    </div>
+                    <span style={{color: 'white', fontWeight: 'bold', fontSize: 18}}> ElementSoftworks, ©{new Date().getFullYear()}</span>
+                </footer>
             </div>
         </>
     );

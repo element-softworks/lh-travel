@@ -133,8 +133,8 @@
     background: white;
     border-radius: 15px;
     width: 100%;
-    height: 60px;
     padding: 25px;
+    margin-bottom: 32px;
 }
 
 .search-result {
@@ -165,7 +165,24 @@
     z-index: 500;
 }
 
-
 .gatsby-image-wrapper {
     opacity: 1 !important;
+}
+
+.jeff-tree-holder {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 12px;
+    text-align: center;
+
+    svg {
+        margin: 2px
+    }
+}
+
+.results-title-area {
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
