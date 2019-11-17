@@ -10,21 +10,14 @@ import useKonami from "react-use-konami";
 // Style Import
 import "../styles/_index.scss";
 import "../styles/pages/_index.scss";
-import { Search, Button } from "semantic-ui-react";
+import { Search, Button, Modal } from "semantic-ui-react";
 import distance from "@turf/distance";
 import point from "turf-point";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-    faPlaneDeparture,
-    faCar,
-    faTruck,
-    faTrain,
-    faBus,
-    faTree,
-} from "@fortawesome/pro-regular-svg-icons";
-
+import { faPlaneDeparture, faCar, faTruck, faTrain, faBus, faTree } from "@fortawesome/pro-regular-svg-icons";
 import * as _airports from "../static/airports.json";
+
 const airports = _airports.map(item => ({ ...item, key: item.code }));
 const jeff_green = "#b7e778";
 const EU_COUNTRIES = [
@@ -115,12 +108,10 @@ const IndexPage = () => {
 
     function retrieveResults() {
         setButtonLoading(true);
-        const URL = `https://api.skypicker.com/flights?flyFrom=${locations[0]}&to=${
-            locations[1]
-        }&date_from=${format(dates[0], "dd/MM/yyyy")}&date_to=${format(
-            dates[1],
+        const URL = `https://api.skypicker.com/flights?flyFrom=${locations[0]}&to=${locations[1]}&date_from=${format(
+            dates[0],
             "dd/MM/yyyy",
-        )}&max_stopovers=1&limit=5&curr=GBP&partner=picky`;
+        )}&date_to=${format(dates[1], "dd/MM/yyyy")}&max_stopovers=1&limit=5&curr=GBP&partner=picky`;
         fetch(URL)
             .then(response => response.json())
             .then(({ data }) => setSearchResults(data))
@@ -143,9 +134,7 @@ const IndexPage = () => {
                             <div className="splash-place-container">
                                 <Search
                                     resultRenderer={ResultComponent}
-                                    onResultSelect={(_, { result }) =>
-                                        onResultSelect(result, "depart")
-                                    }
+                                    onResultSelect={(_, { result }) => onResultSelect(result, "depart")}
                                     results={results}
                                     loading={isSearching}
                                     onSearchChange={onSearchChange}
@@ -154,9 +143,7 @@ const IndexPage = () => {
                                 />
                                 <Search
                                     resultRenderer={ResultComponent}
-                                    onResultSelect={(_, { result }) =>
-                                        onResultSelect(result, "arrive")
-                                    }
+                                    onResultSelect={(_, { result }) => onResultSelect(result, "arrive")}
                                     results={results}
                                     loading={isSearching}
                                     onSearchChange={onSearchChange}
@@ -179,31 +166,34 @@ const IndexPage = () => {
                                 />
                             </div>
                             <div className="splash-button-container">
-                                <Button
-                                    onClick={retrieveResults}
-                                    loading={isButtonLoading}
-                                    className="jeff-green"
-                                >
+                                <Button onClick={retrieveResults} loading={isButtonLoading} className="jeff-green">
                                     Search
                                 </Button>
                             </div>
                         </div>
                     </section>
                 </BackgroundSection>
-                {searchResults.length > 0 && (
-                    <SearchResults locations={locations} results={searchResults} />
-                )}
+                {searchResults.length > 0 && <SearchResults locations={locations} results={searchResults} />}
             </Layout>
         </React.Fragment>
     );
 };
 
 const SearchResults = ({ results = [], locations = [] }) => {
+    const [isModalOpen, setModalOpen] = useState(false);
+
+    function toggleModal() {
+        setModalOpen(!isModalOpen);
+    }
+
     return (
         <section className="results-container">
-            <h2>
-                Search Results ({locations[0]} - {locations[1]})
-            </h2>
+            <div className="results-title-area">
+                <h2 style={{ marginBottom: 0 }}>
+                    Search Results ({locations[0]} - {locations[1]})
+                </h2>
+                <Button onClick={toggleModal}>Show on Map</Button>
+            </div>
             <AngryCO2Warning
                 locations={locations}
                 route={results[0].route}
@@ -213,6 +203,9 @@ const SearchResults = ({ results = [], locations = [] }) => {
             {results.map((result, index) => (
                 <SingleSearchResult result={result} index={index} />
             ))}
+            <Modal open={isModalOpen} onClose={toggleModal}>
+                My Modal
+            </Modal>
         </section>
     );
 };
@@ -244,13 +237,11 @@ const AngryCO2Warning = ({ from, to, route, locations }) => {
                 <h3 className="text-center">
                     {from.code === to.code ? (
                         <i>
-                            This flight is domestic! Here's how much CO<sub>2</sub> you could've
-                            produced.
+                            This flight is domestic! Here's how much CO<sub>2</sub> you could've produced.
                         </i>
                     ) : (
                         <i>
-                            This flight is in the EU! Here's how much CO<sub>2</sub> you could've
-                            produced.
+                            This flight is in the EU! Here's how much CO<sub>2</sub> you could've produced.
                         </i>
                     )}
                 </h3>
@@ -315,8 +306,7 @@ const AngryCO2Warning = ({ from, to, route, locations }) => {
     return (
         <section className="jeff-informs-you">
             <h3 className="text-center">
-                That's a long flight! Here's how many trees you'd need to absorb the carbon for just
-                this flight!
+                That's a long flight! Here's how many trees you'd need to absorb your carbon for just this flight!
             </h3>
             <div className="jeff-tree-holder">
                 {treeAmount.map(tree => (
@@ -382,7 +372,7 @@ const SingleSearchResult = ({ result, index }) => {
                 <a href={result.deep_link} target="_blank" rel="noopener noreferrer">
                     <Button className="jeff-green">
                         <span>Purchase</span>
-                        <FontAwesomeIcon style={{marginLeft: 5}} icon={faPlaneDeparture}></FontAwesomeIcon>
+                        <FontAwesomeIcon style={{ marginLeft: 5 }} icon={faPlaneDeparture}></FontAwesomeIcon>
                     </Button>
                 </a>
             </div>
