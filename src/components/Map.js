@@ -11,38 +11,26 @@ const OPTIONS = {
 
 const size = 100
 
-const Map = (props) => {
-  const [journeys, setJourneys] = useState([{
+const Map = () => {
+  const [journeys, setJourneys] = useState({
     destination: { lon: -0.454295, lat: 51.47002 },
     source: { lon: -118.410042, lat: 33.942791 },
-  }])
+  })
   const mapRef = useRef(null)
   let map = useRef(null)
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      if(props && props.data){
-        const legs = props.data.map(el=>{
-          return {source: {lon: el.lngFrom, lat: el.latFrom}, destination:{lon: el.lngTo, lat: el.latTo}}
-        })
-        setJourneys(legs);
-      }
       mapboxgl = require("mapbox-gl")
       mapboxgl.accessToken =
         "pk.eyJ1IjoiY2FtZXJvbi1ydXNzZWxsIiwiYSI6ImNrMzFrZHA4ZjA5YWszanBndWZzbHNwdDUifQ.-LVFo8Lif5JLWkq6y8wVuw"
       map.current = new mapboxgl.Map({ ...OPTIONS, container: mapRef.current })
       map.current.on("load", function() {
-
-        journeys.map(journey => {
-          drawSourceAndDestination(journey, size, map.current);
-          drawLine(map.current, journey.source, journey.destination)
-        })
-
-        //drawSourceAndDestination(journeys, size, map.current)
-        //drawLine(map.current, journeys.source, journeys.destination)
+        drawSourceAndDestination(journeys, size, map.current)
+        drawLine(map.current, journeys.source, journeys.destination)
       })
     }
-  }, [journeys, props])
+  }, [journeys])
 
   return <div className="map-container" ref={mapRef}></div>
 }

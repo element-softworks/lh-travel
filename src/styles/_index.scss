@@ -5,3 +5,14 @@
 .text-center {
     text-align: center;
 }
+
+.footer {
+    padding: 24px;
+    display: flex;
+    justify-content: space-between;
+    background-color: #b7e778;
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+    align-items: center;
+}
