@@ -15,9 +15,9 @@ import distance from "@turf/distance";
 import point from "turf-point";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlaneDeparture, faCar, faTruck, faTrain, faBus, faTree } from "@fortawesome/pro-regular-svg-icons";
-import * as _airports from "../static/airports.json";
+import { faPlaneDeparture, faCar, faTruck, faTrain, faBus } from "@fortawesome/pro-regular-svg-icons";
 
+import _airports from "../static/airports.json";
 const airports = _airports.map(item => ({ ...item, key: item.code }));
 const jeff_green = "#b7e778";
 const EU_COUNTRIES = [
