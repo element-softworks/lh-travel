@@ -14,8 +14,10 @@ import { Search, Button, Modal } from "semantic-ui-react";
 import distance from "@turf/distance";
 import point from "turf-point";
 
+import Map from "../components/Map";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlaneDeparture, faCar, faTruck, faTrain, faBus } from "@fortawesome/pro-regular-svg-icons";
+import { faPlaneDeparture, faCar, faTruck, faTrain, faBus, faTree } from "@fortawesome/pro-regular-svg-icons";
 
 import _airports from "../static/airports.json";
 const airports = _airports.map(item => ({ ...item, key: item.code }));
@@ -204,7 +206,7 @@ const SearchResults = ({ results = [], locations = [] }) => {
                 <SingleSearchResult result={result} index={index} />
             ))}
             <Modal open={isModalOpen} onClose={toggleModal}>
-                My Modal
+                <Map data={results[0].route} />
             </Modal>
         </section>
     );
