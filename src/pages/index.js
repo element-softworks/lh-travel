@@ -224,7 +224,7 @@ const AngryCO2Warning = ({ from, to, route, locations }) => {
     const airDistance = route
         .map(({ lngFrom, latFrom, lngTo, latTo }) => {
             let from = point([lngFrom, latFrom]);
-            let to = point([lngFrom, latTo]);
+            let to = point([lngTo, latTo]);
             return distance(from, to, { units: "kilometers" });
         })
         .reduce((acc, curr) => acc + curr)
@@ -318,10 +318,12 @@ const SingleSearchResult = ({ result, index }) => {
         totalDistance = result.route
             .map(({ lngFrom, latFrom, lngTo, latTo }) => {
                 let from = point([lngFrom, latFrom]);
-                let to = point([lngFrom, latTo]);
+                let to = point([lngTo, latTo]);
                 return distance(from, to, { units: "kilometers" });
             })
-            .reduce((acc, curr) => acc + curr)
+            .reduce((acc, curr) => {
+                return acc + curr;
+            })
             .toFixed(2);
     }
 
