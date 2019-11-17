@@ -11,6 +11,8 @@ import { useStaticQuery, graphql } from "gatsby";
 
 import Header from "./header";
 import "./layout.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faGithub } from "@fortawesome/free-brands-svg-icons";
 
 const Layout = ({ children }) => {
     const data = useStaticQuery(graphql`
@@ -29,7 +31,12 @@ const Layout = ({ children }) => {
             <div>
                 <main>{children}</main>
                 <footer className="footer">
-                    <p> ElementSoftworks, ©{new Date().getFullYear()}</p>
+                    <div>
+                        <a href="https://github.com/LukeXF/emissions-calculator">
+                            <FontAwesomeIcon icon={faGithub} size="2x" color="white" />
+                        </a>
+                    </div>
+                    <span style={{color: 'white', fontWeight: 'bold', fontSize: 18}}> ElementSoftworks, ©{new Date().getFullYear()}</span>
                 </footer>
             </div>
         </>
