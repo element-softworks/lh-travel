@@ -1,8 +1,5 @@
 import React, { useEffect, useRef, useState } from "react"
-import mapboxgl from "mapbox-gl"
-
-mapboxgl.accessToken =
-  "pk.eyJ1IjoiY2FtZXJvbi1ydXNzZWxsIiwiYSI6ImNrMzFrZHA4ZjA5YWszanBndWZzbHNwdDUifQ.-LVFo8Lif5JLWkq6y8wVuw"
+let mapboxgl
 
 const OPTIONS = {
   style: "mapbox://styles/mapbox/streets-v9",
@@ -14,20 +11,6 @@ const OPTIONS = {
 
 const size = 100
 
-// Create a GeoJSON source with an empty lineString.
-var geojson = {
-  type: "FeatureCollection",
-  features: [
-    {
-      type: "Feature",
-      geometry: {
-        type: "LineString",
-        coordinates: [[0, 0]],
-      },
-    },
-  ],
-}
-
 const Map = () => {
   const [journeys, setJourneys] = useState({
     source: { lon: -0.454295, lat: 51.47002 },
@@ -37,9 +20,16 @@ const Map = () => {
   let map = useRef(null)
 
   useEffect(() => {
-    map.current = new mapboxgl.Map({ ...OPTIONS, container: mapRef.current })
-    drawSourceAndDestination(journeys, size, map.current);
-    drawLine(map.current)
+    if (typeof window !== "undefined") {
+      mapboxgl = require("mapbox-gl")
+      mapboxgl.accessToken =
+        "pk.eyJ1IjoiY2FtZXJvbi1ydXNzZWxsIiwiYSI6ImNrMzFrZHA4ZjA5YWszanBndWZzbHNwdDUifQ.-LVFo8Lif5JLWkq6y8wVuw"
+      map.current = new mapboxgl.Map({ ...OPTIONS, container: mapRef.current })
+      map.current.on("load", function() {
+        drawSourceAndDestination(journeys, size, map.current)
+        drawLine(map.current, journeys.source, journeys.destination)
+      })
+    }
   }, [journeys])
 
   return <div className="map-container" ref={mapRef}></div>
@@ -97,105 +87,143 @@ const drawSourceAndDestination = (journeys, size, map) => {
     },
   }
 
-  map.on("load", function() {
-    map.addImage("pulsing-dot", pulsingDot, { pixelRatio: 2 })
+  //map.on("load", function() {
+  map.addImage("pulsing-dot", pulsingDot, { pixelRatio: 2 })
 
-    map.addLayer({
-      id: "points",
-      type: "symbol",
-      source: {
-        type: "geojson",
-        data: {
-          type: "FeatureCollection",
-          features: [
-            {
-              type: "Feature",
-              geometry: {
-                type: "Point",
-                coordinates: [journeys.source.lon, journeys.source.lat],
-              },
+  map.addLayer({
+    id: "points",
+    type: "symbol",
+    source: {
+      type: "geojson",
+      data: {
+        type: "FeatureCollection",
+        features: [
+          {
+            type: "Feature",
+            geometry: {
+              type: "Point",
+              coordinates: [journeys.source.lon, journeys.source.lat],
             },
-            {
-              type: "Feature",
-              geometry: {
-                type: "Point",
-                coordinates: [
-                  journeys.destination.lon,
-                  journeys.destination.lat,
-                ],
-              },
+          },
+          {
+            type: "Feature",
+            geometry: {
+              type: "Point",
+              coordinates: [journeys.destination.lon, journeys.destination.lat],
             },
-          ],
-        },
+          },
+        ],
       },
-      layout: {
-        "icon-image": "pulsing-dot",
-      },
-    })
-  }) //end onload
+    },
+    layout: {
+      "icon-image": "pulsing-dot",
+    },
+  })
+  //}) //end onload
 }
 
-const drawLine = (map) => {
-  var speedFactor = 60 // number of frames per longitude degree
+const drawLine = (map, startingPos, endingPos) => {
+  var speedFactor = 20 // number of frames per longitude degree
   var animation // to store and cancel the animation
   var startTime = 0
   var progress = 0 // progress = timestamp - startTime
   var resetTime = false // indicator of whether time reset is needed for the animation
 
-  map.on("load", function() {
-    // add the line which will be modified in the animation
-    map.addLayer({
-      id: "line-animation",
-      type: "line",
-      source: {
-        type: "geojson",
-        data: geojson,
+  // Create a GeoJSON source with an empty lineString.
+  var geojson = {
+    type: "FeatureCollection",
+    features: [
+      {
+        type: "Feature",
+        geometry: {
+          type: "LineString",
+          coordinates: [],
+        },
       },
-      layout: {
-        "line-cap": "round",
-        "line-join": "round",
-      },
-      paint: {
-        "line-color": "#ed6498",
-        "line-width": 5,
-        "line-opacity": 0.8,
-      },
-    })
-
-    startTime = performance.now()
-
-    animateLine()
-    // reset startTime and progress once the tab loses or gains focus
-    // requestAnimationFrame also pauses on hidden tabs by default
-    document.addEventListener("visibilitychange", function() {
-      resetTime = true
-    })
-
-    // animated in a circle as a sine wave along the map.
-    function animateLine(timestamp) {
-      if (resetTime) {
-        // resume previous progress
-        startTime = performance.now() - progress
-        resetTime = false
-      } else {
-        progress = timestamp - startTime
-      }
-
-      // restart if it finishes a loop
-      if (progress > speedFactor * 360) {
-        startTime = timestamp
-        geojson.features[0].geometry.coordinates = []
-      } else {
-        var x = progress / speedFactor
-        // draw a sine wave with some math.
-        var y = Math.sin((x * Math.PI) / 90) * 40
-        // append new coordinates to the lineString
-        geojson.features[0].geometry.coordinates.push([x, y])
-        // then update the map
-        map.getSource("line-animation").setData(geojson)
-      }
-      // Request the next frame of the animation.
-      animation = requestAnimationFrame(animateLine)
-    }
+    ],
+  }
+  //map.on("load", function() {
+  // add the line which will be modified in the animation
+  map.addLayer({
+    id: "line-animation",
+    type: "line",
+    source: {
+      type: "geojson",
+      data: geojson,
+    },
+    layout: {
+      "line-cap": "round",
+      "line-join": "round",
+    },
+    paint: {
+      "line-color": "#ed6498",
+      "line-width": 5,
+      "line-opacity": 0.8,
+    },
   })
+
+  //get difference between 2 points
+  var diffX = endingPos.lon - startingPos.lon
+  var diffY = endingPos.lat - startingPos.lat
+
+  var sfX = diffX / speedFactor
+  var sfY = diffY / speedFactor
+
+  var i = 0
+  var j = 0
+
+  var lineCoordinates = []
+
+  //set up co-ordinate array of arrays for geojson object
+  while (i < diffX || Math.abs(j) < Math.abs(diffY)) {
+    lineCoordinates.push([startingPos.lon - i, startingPos.lat - j])
+
+    if (i < diffX) {
+      i += sfX
+    }
+
+    if (Math.abs(j) < Math.abs(diffY)) {
+      j += sfY
+    }
+  }
+
+  var animationCounter = 0
+  animateLine()
+  //startTime = performance.now()
+  function animateLine() {
+    //if we have not reached the other side
+    if (animationCounter < lineCoordinates.length) {
+      //push the next co-ordinate
+      geojson.features[0].geometry.coordinates.push(
+        lineCoordinates[animationCounter]
+      )
+
+      //update the map
+      map.getSource("line-animation").setData(geojson)
+
+      //display animation
+      requestAnimationFrame(animateLine)
+
+      //update counter
+      animationCounter++
+    } else {
+      //we have drawn the line
+      var coord = geojson.features[0].geometry.coordinates
+
+      //removes the next part of the line
+      coord.shift()
+      console.log(coord)
+
+      if (coord.length > 0) {
+        //update the array
+        geojson.features[0].geometry.coordinates = coord
+        map.getSource("line-animation").setData(geojson)
+
+        //-------------- Point2 Animation End ---------------
+        requestAnimationFrame(animateLine)
+      } else {
+        animationCounter = 0
+      }
+    }
+  }
 }
