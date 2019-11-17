@@ -53,7 +53,7 @@ const Logo = ({ ...props }) => {
         }
     `);
 
-    return <Img {...props} fluid={data.placeholderImage.childImageSharp.fluid} />;
+    return <Img {...props} fluid={data.placeholderImage.childImageSharp.fluid} height={37} width={150}/>;
 };
 
 export default Header;

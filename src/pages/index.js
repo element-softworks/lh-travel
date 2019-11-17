@@ -23,7 +23,7 @@ import {
     faBus,
 } from "@fortawesome/pro-regular-svg-icons";
 
-import * as _airports from "../static/airports.json";
+import _airports from "../static/airports.json";
 const airports = _airports.map(item => ({ ...item, key: item.code }));
 const jeff_green = "#b7e778";
 const EU_COUNTRIES = [
