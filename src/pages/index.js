@@ -21,6 +21,7 @@ import {
     faTruck,
     faTrain,
     faBus,
+    faTree,
 } from "@fortawesome/pro-regular-svg-icons";
 
 import * as _airports from "../static/airports.json";
@@ -309,7 +310,24 @@ const AngryCO2Warning = ({ from, to, route, locations }) => {
         );
     }
 
-    return null;
+    const treeAmount = new Array(Math.floor((airDistance * 0.1753).toFixed(2) / 21)).fill(faTree);
+
+    return (
+        <section className="jeff-informs-you">
+            <h3 className="text-center">
+                That's a long flight! Here's how many trees you'd need to absorb the carbon for just
+                this flight!
+            </h3>
+            <div className="jeff-tree-holder">
+                {treeAmount.map(tree => (
+                    <FontAwesomeIcon icon={tree} color="#b7e778" size="2x" />
+                ))}
+            </div>
+            <h6 style={{ marginBottom: 5 }} className="text-center">
+                ({treeAmount.length} trees!)
+            </h6>
+        </section>
+    );
 };
 
 const SingleSearchResult = ({ result, index }) => {
@@ -359,6 +377,14 @@ const SingleSearchResult = ({ result, index }) => {
             <div>
                 <h5 style={{ marginBottom: 0 }}>Price</h5>
                 <p>£{result.price}</p>
+            </div>
+            <div>
+                <a href={result.deep_link} target="_blank" rel="noopener noreferrer">
+                    <Button className="jeff-green">
+                        <span>Purchase</span>
+                        <FontAwesomeIcon style={{marginLeft: 5}} icon={faPlaneDeparture}></FontAwesomeIcon>
+                    </Button>
+                </a>
             </div>
         </article>
     );

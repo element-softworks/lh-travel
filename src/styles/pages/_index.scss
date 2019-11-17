@@ -165,7 +165,17 @@
     z-index: 500;
 }
 
-
 .gatsby-image-wrapper {
     opacity: 1 !important;
+}
+
+.jeff-tree-holder {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 12px;
+    text-align: center;
+
+    svg {
+        margin: 2px
+    }
 }
