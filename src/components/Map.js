@@ -13,8 +13,8 @@ const size = 100
 
 const Map = () => {
   const [journeys, setJourneys] = useState({
-    source: { lon: -0.454295, lat: 51.47002 },
-    destination: { lon: -118.410042, lat: 33.942791 },
+    destination: { lon: -0.454295, lat: 51.47002 },
+    source: { lon: -118.410042, lat: 33.942791 },
   })
   const mapRef = useRef(null)
   let map = useRef(null)
@@ -163,8 +163,8 @@ const drawLine = (map, startingPos, endingPos) => {
   })
 
   //get difference between 2 points
-  var diffX = endingPos.lon - startingPos.lon
-  var diffY = endingPos.lat - startingPos.lat
+  var diffX = (endingPos.lon - startingPos.lon)
+  var diffY = (endingPos.lat - startingPos.lat)
 
   var sfX = diffX / speedFactor
   var sfY = diffY / speedFactor
@@ -175,18 +175,21 @@ const drawLine = (map, startingPos, endingPos) => {
   var lineCoordinates = []
 
   //set up co-ordinate array of arrays for geojson object
-  while (i < diffX || Math.abs(j) < Math.abs(diffY)) {
-    lineCoordinates.push([startingPos.lon - i, startingPos.lat - j])
-
-    if (i < diffX) {
-      i += sfX
+  while (Math.abs(i) < Math.abs(diffX) || Math.abs(j) < Math.abs(diffY)) {
+    lineCoordinates.push([startingPos.lon + i, startingPos.lat + j])
+    console.log(i, diffX)
+    if (Math.abs(i) < Math.abs(diffX)) {
+        i += sfX  
     }
 
     if (Math.abs(j) < Math.abs(diffY)) {
-      j += sfY
+        j += sfY; 
     }
   }
 
+  setInterval(()=>{
+
+  
   var animationCounter = 0
   animateLine()
   //startTime = performance.now()
@@ -226,4 +229,5 @@ const drawLine = (map, startingPos, endingPos) => {
       }
     }
   }
+},2000)
 }
