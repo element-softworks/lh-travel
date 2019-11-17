@@ -13,8 +13,8 @@ const size = 100
 
 const Map = () => {
   const [journeys, setJourneys] = useState({
-    source: { lon: -0.454295, lat: 51.47002 },
-    destination: { lon: -118.410042, lat: 33.942791 },
+    destination: { lon: -0.454295, lat: 51.47002 },
+    source: { lon: -118.410042, lat: 33.942791 },
   })
   const mapRef = useRef(null)
   let map = useRef(null)
@@ -187,6 +187,9 @@ const drawLine = (map, startingPos, endingPos) => {
     }
   }
 
+  setInterval(()=>{
+
+  
   var animationCounter = 0
   animateLine()
   //startTime = performance.now()
@@ -226,4 +229,5 @@ const drawLine = (map, startingPos, endingPos) => {
       }
     }
   }
+},2000)
 }
